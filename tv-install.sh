@@ -18,11 +18,13 @@ echo "    Package Size     : Dynamic (~200 MB)            "
 echo "===================================================="
 echo ""
 
-# 1. السؤال التفاعلي عن مسار التثبيت
-read -p "Do you want to install inside [/data/server]? [Y/n]: " choice
+# 1. السؤال التفاعلي عن مسار التثبيت (التوافق التام مع mksh)
+echo -n "Do you want to install inside [/data/server]? [Y/n]: "
+read choice < /dev/tty
 case "$choice" in
   [nN][oO]|[nN])
-    read -p "Enter custom folder name under /data/ (e.g. myserver): " custom_folder
+    echo -n "Enter custom folder name under /data/ (e.g. myserver): "
+    read custom_folder < /dev/tty
     if [ -z "$custom_folder" ]; then custom_folder="server"; fi
     TARGET_DIR="/data/$custom_folder"
     ;;
@@ -81,12 +83,12 @@ fi
 chmod 755 /system/etc/install-recovery.sh
 mount -o ro,remount /system 2>/dev/null
 
-# 6. الدخول التفاعلي لطلب كلمة سر الـ Root الجديدة
+# 6. الدخول التفاعلي لطلب كلمة سر الـ Root الجديدة مع فتح شاشة TTY
 echo ""
 echo "===================================================="
 echo "   🔑 ENTER NEW ROOT PASSWORD FOR DEBIAN SYSTEM     "
 echo "===================================================="
-chroot "$TARGET_DIR" /bin/bash -c "export PATH=/bin:/usr/bin:/sbin:/usr/sbin:\$PATH; passwd root"
+chroot "$TARGET_DIR" /bin/bash -c "export PATH=/bin:/usr/bin:/sbin:/usr/sbin:\$PATH; passwd root" < /dev/tty
 
 # 7. تشغيل الخدمات فوراً وتأكيد النجاح
 /system/bin/tv-telnet 2>/dev/null
